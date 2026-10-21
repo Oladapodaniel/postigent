@@ -4,7 +4,7 @@
 export const PostigentMark = ({ size = 60 }: { size?: number }) => {
   return (
     <img
-      src="/brand/postigent-mark.png"
+      src="/postigent-mark.png"
       width={size}
       height={size}
       alt="Postigent"
