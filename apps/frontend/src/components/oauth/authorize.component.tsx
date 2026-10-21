@@ -223,7 +223,7 @@ export const OAuthAuthorize: FC<{ logged: boolean }> = ({ logged }) => {
             <>
               <div className="border-t border-[#2A2929] pt-[16px]">
                 <div className="text-[14px] text-gray-400 mb-[12px]">
-                  This application is requesting access to your Postiz
+                  This application is requesting access to your Postigent
                   account. It will be able to:
                 </div>
                 <ul className="text-[14px] list-disc list-inside space-y-[4px]">
@@ -255,7 +255,7 @@ export const OAuthAuthorize: FC<{ logged: boolean }> = ({ logged }) => {
                   onClick={signIn}
                   className="bg-[#D9480F] hover:bg-[#F2743F] text-white rounded-[8px] py-[10px] px-[16px] text-[14px] font-semibold transition-colors"
                 >
-                  Sign in to Postiz
+                  Sign in to Postigent
                 </button>
               )}
 
