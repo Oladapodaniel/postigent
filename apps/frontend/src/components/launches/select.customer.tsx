@@ -91,11 +91,11 @@ export const SelectCustomer: FC<{
               <div
                 className={clsx(
                   'w-[24px] h-[24px] min-w-[24px] rounded-full border-[1.5px] flex justify-center items-center',
-                  selected ? 'border-[#FC69FF]' : 'border-newTextColor/20'
+                  selected ? 'border-[#f97316]' : 'border-newTextColor/20'
                 )}
               >
                 {selected && (
-                  <div className="w-[12px] h-[12px] rounded-full bg-[#FC69FF]" />
+                  <div className="w-[12px] h-[12px] rounded-full bg-[#f97316]" />
                 )}
               </div>
             </div>
@@ -113,7 +113,7 @@ export const SelectCustomer: FC<{
         onClick={openClose}
         className={clsx(
           'relative z-[20] cursor-pointer h-[42px] rounded-[8px] pl-[16px] pr-[12px] gap-[8px] border flex items-center',
-          open ? 'border-[#612BD3]' : 'border-newColColor'
+          open ? 'border-[#D9480F]' : 'border-newColColor'
         )}
       >
         <div>
