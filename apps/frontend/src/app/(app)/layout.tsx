@@ -34,6 +34,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     <html>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         {!!process.env.DATAFAST_WEBSITE_ID && (
           <Script
             data-website-id={process.env.DATAFAST_WEBSITE_ID}
