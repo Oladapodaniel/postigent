@@ -138,6 +138,15 @@ export const LayoutComponent = ({ children }: { children: ReactNode }) => {
                             <Logo />
                           </div>
                           <TopMenu />
+                          <a
+                            href="https://github.com/Oladapodaniel/postigent"
+                            target="_blank"
+                            rel="noreferrer"
+                            title="Postigent source code (AGPL-3.0, built on Postiz)"
+                            className="mt-auto text-center text-[10px] text-textItemBlur hover:text-newTextColor"
+                          >
+                            Source
+                          </a>
                         </div>
                       </div>
                     </div>
