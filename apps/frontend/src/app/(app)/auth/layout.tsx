@@ -36,7 +36,7 @@ export default async function AuthLayout({
             </a>
           </div>
         </div>
-        <div className="flex-1 pt-[88px] px-[40px] hidden lg:flex flex-col items-center">
+        <div className="flex-1 px-[40px] py-[40px] hidden lg:flex flex-col items-center justify-center">
           <div className="text-center text-[36px] leading-[1.25]">
             Plan once.{' '}
             <span className="text-[#f97316]">Post everywhere.</span>
