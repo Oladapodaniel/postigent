@@ -25,7 +25,13 @@ export default async function AuthLayout({
             <LogoTextComponent />
             <div className="flex">{children}</div>
           </div>
-          <div className="text-center text-[12px] text-[#A3A3A3] mt-[24px]">
+          <div className="text-center text-[12px] text-[#A3A3A3] mt-[24px] leading-[1.6]">
+            &copy; {new Date().getFullYear()} WHATSBULK TECHNOLOGIES LIMITED (RC 9559554)
+            <br />
+            <a className="underline" href="/terms.html">Terms</a> &middot;{' '}
+            <a className="underline" href="/privacy.html">Privacy</a> &middot;{' '}
+            <a className="underline" href="/data-deletion.html">Data deletion</a>
+            <br />
             Postigent is built on{' '}
             <a className="underline" href="https://github.com/gitroomhq/postiz-app" target="_blank" rel="noreferrer">
               Postiz
