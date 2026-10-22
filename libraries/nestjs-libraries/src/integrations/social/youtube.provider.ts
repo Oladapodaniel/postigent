@@ -64,11 +64,10 @@ export class YoutubeProvider extends SocialAbstract implements SocialProvider {
   scopes = [
     'https://www.googleapis.com/auth/userinfo.profile',
     'https://www.googleapis.com/auth/userinfo.email',
-    'https://www.googleapis.com/auth/youtube',
-    'https://www.googleapis.com/auth/youtube.force-ssl',
+    // Postigent: only the scopes our features use (channels.list, videos.list, videos.insert,
+    // thumbnails.set, analytics reports). Fewer scopes = simpler Google verification.
     'https://www.googleapis.com/auth/youtube.readonly',
     'https://www.googleapis.com/auth/youtube.upload',
-    'https://www.googleapis.com/auth/youtubepartner',
     'https://www.googleapis.com/auth/yt-analytics.readonly',
   ];
 
