@@ -438,6 +438,47 @@ export class TiktokProvider extends SocialAbstract implements SocialProvider {
     };
   }
 
+  // Called from the post settings screen (/integrations/function). TikTok's
+  // Direct Post guidelines require showing the creator's nickname, offering only
+  // the privacy levels the creator allows, and locking interactions the creator
+  // turned off in the TikTok app.
+  async creatorInfo(accessToken: string) {
+    const { data, error } = await (
+      await fetch(
+        'https://open.tiktokapis.com/v2/post/publish/creator_info/query/',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
+    ).json();
+
+    if (error?.code && error.code !== 'ok') {
+      return {
+        canPost: false,
+        message:
+          error.code === 'spam_risk_too_many_posts'
+            ? 'This TikTok account has reached its daily posting limit. Please try again later.'
+            : error.message || 'TikTok cannot accept posts from this account right now.',
+      };
+    }
+
+    return {
+      canPost: true,
+      nickname: data?.creator_nickname,
+      username: data?.creator_username,
+      avatar: data?.creator_avatar_url,
+      privacyLevelOptions: data?.privacy_level_options || [],
+      commentDisabled: !!data?.comment_disabled,
+      duetDisabled: !!data?.duet_disabled,
+      stitchDisabled: !!data?.stitch_disabled,
+      maxVideoPostDurationSec: data?.max_video_post_duration_sec,
+    };
+  }
+
   // Single status check for a publish_id, no loops and no timers: `post` returns
   // a `pending` PostResponse right after the upload, and the post workflow polls
   // this method with durable timers, so a stuck/retried check can never re-run

@@ -1,8 +1,69 @@
 import {
-  IsBoolean, ValidateIf, IsIn, IsString, MaxLength, IsOptional, IsDefined, IsNumber, Min, Max, ValidateNested
+  IsBoolean, ValidateIf, IsIn, IsString, MaxLength, IsOptional, IsDefined, IsNumber, Min, Max, ValidateNested,
+  registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { JSONSchema } from 'class-validator-jsonschema';
+
+// TikTok's Direct Post guidelines: branded content can't be private, and once
+// commercial content disclosure is turned on the creator must say whether it
+// promotes their own brand, a third party, or both.
+@ValidatorConstraint({ name: 'IsTikTokBrandedContentVisible', async: false })
+export class IsTikTokBrandedContentVisibleConstraint
+  implements ValidatorConstraintInterface
+{
+  validate(value: unknown, args: ValidationArguments): boolean {
+    const post = args.object as TikTokDto;
+    return !(post.brand_content_toggle && value === 'SELF_ONLY');
+  }
+
+  defaultMessage(_args: ValidationArguments): string {
+    return 'Branded content visibility cannot be set to private ("Self only").';
+  }
+}
+
+export function IsTikTokBrandedContentVisible(
+  validationOptions?: ValidationOptions
+) {
+  return function (object: object, propertyName: string) {
+    registerDecorator({
+      target: object.constructor,
+      propertyName,
+      options: validationOptions,
+      validator: IsTikTokBrandedContentVisibleConstraint,
+    });
+  };
+}
+
+@ValidatorConstraint({ name: 'IsTikTokDisclosureComplete', async: false })
+export class IsTikTokDisclosureCompleteConstraint
+  implements ValidatorConstraintInterface
+{
+  validate(_value: unknown, args: ValidationArguments): boolean {
+    const post = args.object as TikTokDto;
+    if (!post.disclose || post.content_posting_method === 'UPLOAD') {
+      return true;
+    }
+    return !!(post.brand_organic_toggle || post.brand_content_toggle);
+  }
+
+  defaultMessage(_args: ValidationArguments): string {
+    return 'You need to indicate if your content promotes yourself, a third party, or both.';
+  }
+}
+
+export function IsTikTokDisclosureComplete(
+  validationOptions?: ValidationOptions
+) {
+  return function (object: object, propertyName: string) {
+    registerDecorator({
+      target: object.constructor,
+      propertyName,
+      options: validationOptions,
+      validator: IsTikTokDisclosureCompleteConstraint,
+    });
+  };
+}
 
 export class TikTokMusic {
   @IsDefined()
@@ -77,16 +138,23 @@ export class TikTokDto {
   })
   title: string;
 
-  @IsIn([
-    'PUBLIC_TO_EVERYONE',
-    'MUTUAL_FOLLOW_FRIENDS',
-    'FOLLOWER_OF_CREATOR',
-    'SELF_ONLY',
-  ])
-  @IsString()
+  // TikTok requires the creator to pick a privacy level themselves (no
+  // default), so an empty value fails here unless the post is UPLOAD-only.
+  @ValidateIf((p) => p.content_posting_method !== 'UPLOAD')
+  @IsIn(
+    [
+      'PUBLIC_TO_EVERYONE',
+      'MUTUAL_FOLLOW_FRIENDS',
+      'FOLLOWER_OF_CREATOR',
+      'SELF_ONLY',
+    ],
+    { message: 'Choose who can see this TikTok post' }
+  )
+  @IsString({ message: 'Choose who can see this TikTok post' })
+  @IsTikTokBrandedContentVisible()
   @JSONSchema({
     description:
-      'Applied only when content_posting_method=DIRECT_POST. Ignored by TikTok on UPLOAD.',
+      'Required for content_posting_method=DIRECT_POST (there is no default; the user must choose). Ignored by TikTok on UPLOAD. Cannot be SELF_ONLY when brand_content_toggle is true.',
   })
   privacy_level:
     | 'PUBLIC_TO_EVERYONE'
@@ -140,11 +208,20 @@ export class TikTokDto {
   video_made_with_ai: boolean;
 
   @IsBoolean()
+  @IsTikTokDisclosureComplete()
   @JSONSchema({
     description:
       'Applied only when content_posting_method=DIRECT_POST. Ignored by TikTok on UPLOAD.',
   })
   brand_organic_toggle: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  @JSONSchema({
+    description:
+      'Commercial content disclosure. When true, brand_organic_toggle and/or brand_content_toggle must be true.',
+  })
+  disclose?: boolean;
 
   @Type(() => TikTokMusic)
   @ValidateNested()

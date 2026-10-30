@@ -18,15 +18,19 @@ export const Checkbox = forwardRef<
       };
     }) => void;
     variant?: 'default' | 'hollow';
+    disabled?: boolean;
   }
 >((props, ref: any) => {
-  const { checked, className, label, disableForm, variant } = props;
+  const { checked, className, label, disableForm, variant, disabled } = props;
   const form = useFormContext();
   const register = disableForm ? {} : form.register(props.name!);
   const watch = disableForm ? false : form.watch(props.name!);
   const val = watch || checked;
 
   const changeStatus = useCallback(() => {
+    if (disabled) {
+      return;
+    }
     props?.onChange?.({
       target: {
         name: props.name!,
@@ -42,9 +46,14 @@ export const Checkbox = forwardRef<
         },
       });
     }
-  }, [val]);
+  }, [val, disabled]);
   return (
-    <div className="flex gap-[10px]">
+    <div
+      className={clsx(
+        'flex gap-[10px]',
+        disabled && 'opacity-50 [&>div:first-child]:cursor-not-allowed'
+      )}
+    >
       <div
         ref={ref}
         {...disableForm ? {} : form.register(props.name!)}
